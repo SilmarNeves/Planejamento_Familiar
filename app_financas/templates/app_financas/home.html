@@ -15,15 +15,20 @@
                 <td>R$ {{ entradas|floatformat:2 }}</td>
             </tr>
             <tr>
-                <td>🔴 Saiu</td>
-                <td>R$ {{ saidas|floatformat:2 }}</td>
+                <td>🔴 Saiu (exceto Total Faturas)</td>
+                <td>R$ {{ saidas_sem_faturas|floatformat:2 }}</td>
+            </tr>
+            <tr>
+                <td>🔴 Total Faturas</td>
+                <td>R$ {{ total_faturas|floatformat:2 }}</td>
             </tr>
             <tr>
                 <td><strong>Sobrou</strong></td>
-                <td><strong>R$ {{ saldo|floatformat:2 }}</strong></td>
+                <td><strong>R$ {{ saldo_final|floatformat:2 }}</strong></td>
             </tr>
         </table>
     </div>
+    
     <div class="col-md-6">
         <canvas id="grafico-pizza"></canvas>
     </div>

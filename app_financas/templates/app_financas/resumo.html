@@ -37,8 +37,9 @@
                     <h3>Resumo</h3>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item text-success">🟢 Entrou: R$ {{ entradas|floatformat:2 }}</li>
-                        <li class="list-group-item text-danger">🔴 Saiu: R$ {{ saidas_total|floatformat:2 }}</li>
-                        <li class="list-group-item"><strong>Sobrou: R$ {{ saldo|floatformat:2 }}</strong></li>
+                        <li class="list-group-item text-danger">🔴 Saiu : R$ {{ saidas_sem_faturas|floatformat:2 }}</li>
+                        <li class="list-group-item text-danger">🔴 Total Faturas: R$ {{ fatura_total|floatformat:2 }}</li>
+                        <li class="list-group-item"><strong>Sobrou: R$ {{ saldo_final|floatformat:2 }}</strong></li>
                         <li class="list-group-item">Acumulado: R$ {{ acumulado|floatformat:2 }}</li>
                     </ul>
                 </div>

@@ -92,18 +92,20 @@ def resumo(request):
     ultimo_dia = timezone.datetime(int(ano), int(mes), calendar.monthrange(int(ano), int(mes))[1])
     
     entradas = Transacao.objects.filter(data__range=[primeiro_dia, ultimo_dia], tipo='entrada').aggregate(Sum('valor'))['valor__sum'] or 0
-    saidas = Transacao.objects.filter(data__range=[primeiro_dia, ultimo_dia], tipo='saida').aggregate(Sum('valor'))['valor__sum'] or 0
+    saidas_sem_faturas = Transacao.objects.filter(data__range=[primeiro_dia, ultimo_dia], tipo='saida').aggregate(Sum('valor'))['valor__sum'] or 0
     
     latest_saldos_faturas = SaldosFaturas.objects.order_by('-data_atualizacao').first()
-    total_faturas = latest_saldos_faturas.fatura_bradesco + latest_saldos_faturas.fatura_itau + latest_saldos_faturas.fatura_inter if latest_saldos_faturas else 0
+    fatura_total = latest_saldos_faturas.fatura_bradesco + latest_saldos_faturas.fatura_itau + latest_saldos_faturas.fatura_inter if latest_saldos_faturas else 0
     
-    saidas_total = saidas + total_faturas
-
-    saldo = entradas - saidas
+    saldo_final = entradas - saidas_sem_faturas - fatura_total
     
     acumulado = Transacao.objects.filter(data__lte=ultimo_dia).aggregate(
-        acumulado=Sum('valor', filter=Q(tipo='entrada')) - Sum('valor', filter=Q(tipo='saida'))
+    acumulado=Sum('valor', filter=Q(tipo='entrada')) - Sum('valor', filter=Q(tipo='saida'))
     )['acumulado'] or 0
+
+# Subtrair o total das faturas do acumulado
+    acumulado -= fatura_total
+
 
     meses = list(range(1, 13))
     anos = list(range(2023, 2027))
@@ -112,14 +114,14 @@ def resumo(request):
         'ano': ano,
         'mes': mes,
         'entradas': float(entradas),
-        'saidas': float(saidas),
-        'saldo': float(saldo),
+        'saidas_sem_faturas': float(saidas_sem_faturas),
+        'fatura_total': float(fatura_total),
+        'saldo_final': float(saldo_final),
         'acumulado': float(acumulado),
         'meses': meses,
         'anos': anos,
         'mes_selecionado': int(mes),
         'ano_selecionado': int(ano),
-        'saidas_total': float(saidas_total),
         'latest_saldos_faturas': latest_saldos_faturas,
     }
     
